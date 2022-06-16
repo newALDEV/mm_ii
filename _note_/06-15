@@ -1,0 +1,233 @@
+# deque 및 at
+
+deque 참고사이트 : https://novlog.tistory.com/23
+
+at 참고사이트 : https://novlog.tistory.com/4
+
+컨테이너로 시퀀스 컨테이너이자 배열기반 컨테이너 (Vector컨테이너와 유사)
+
+하나의 메모리 블록에 저장되는 Vector와 달리 여러개의 메모리 블록에 나뉘어 저장되는 특징을 가지고 있음
+
+
+
+#include <deque>
+#include <bits/stdc++.h>
+
+int main()
+{
+	std::deque<int> d;
+	d.push_back(10); //10추가
+	d.push_back(20); //20추가
+	d.push_back(30); //30추가
+	d.push_back(40); //40추가
+
+	std::cout << "2번째 원소(30)출력 :" << d[2] << std::endl;
+	std::cout << "3번째 원소(40)출력 at : " << d.at(3) << std::endl;
+	
+	return 0;
+
+}
+
+
+
+![image-20220615181130757](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20220615181130757.png)
+
+# Vector
+
+참고사이트 : https://novlog.tistory.com/4
+
+[STL]에 정의된 대표적인 시퀀스 컨테이너로 사용자의 편의를 위해 제공하는 Class의 일종
+
+배열과 비슷하여 사용이 쉽고 자주 사용되며 가변적으로 크기가 변하는 동적배열
+
+메모리를 효율적으로 관리 할 수있지만 빈번한 삽입과 삭제가 일어나는 상황에서는 비효율
+
+
+
+#include <bits/stdc++.h>
+
+int main()
+{
+	std::vector<int> v1; // int type 백터
+	std::vector<int> v2(5); // 0으로 초기화된 size가 5인 벡터
+	std::vector<int> v3(5,10); // 지점값 10으로 초기화된 size가 5인 벡터
+	std::vector<int> v4 = { 1,2,3,4,5 }; // 벡터 생성 후 1,2,3,4,5의 원소를 초기화
+	std::vector<int> v5(v4); // v5는 v4의 복사본
+
+
+	v1.push_back(10); // v1에 10추가
+	v1.push_back(20); // v1에 20추가
+	v1.push_back(30); // v1에 30추가
+	
+	v1.insert(v1.begin(), 100); //시작위치에 100을 삽입
+	v1.insert(v1.begin() + 2, 101); // 시작위치 +2 에 101 삽입
+	//삽입한 위치 뒤의 원소는 모두 한칸씩 밀려남
+	
+	v1.pop_back(); //v1의 마지막 원소 삭제
+	
+	v1.erase(v1.begin() + 2); // v1의 시작위치+2부분 삭제 
+	//삭제한 위치 뒤의 원소는 모두 한칸씩 당겨짐 중간값 삭제는 비효율적
+	
+	for (int i : v4)
+		std::cout << i << " ";
+	std::cout << '\n';
+	
+	std::iter_swap(v4.begin(), v4.begin() + 4);  // iter_swap 함수를 이용하여 내부원소 위치 변경 가능
+	
+	for (int i : v4)
+		std::cout << i << " ";
+	std::cout << "\n";
+
+
+	//size() = 컨테이너에 저장된 원소의 갯수
+	//max_size() = 컨테이너가 담을 수 있는 최대 원소 갯수
+	//capacity() = 실제로 할당된 메모리 공간의 크기
+	
+	std::cout << v4.size() << std::endl;
+	std::cout << v4.max_size() << std::endl;
+	std::cout << v4.capacity() << std::endl;
+	
+	//resize() 컨테이너의 size 변경가능 ex) v4.resize(4)
+	
+	// v4[0] 등과 v4.at(1) 로 같이 출력가능
+	return 0;
+}
+
+
+
+# std::shared_ptr
+
+참고사이트 : https://webnautes.tistory.com/1451
+
+c++11 이 제공하는 스마트 포인터 클래스 중 하나
+
+포인터를 더 이상 사용하지 않는 경우 메모리를 자동으로 해제해줌
+
+잘 사용하면 메모리 해제를 제때 안해 발생하는 메모리 릭(memory leak) 문제를 방지할 수 있음.
+
+
+
+새로운 shared_ptr 객체를 생성하는 방법은 std::make_shared를 사용
+
+std::make_shared는 객체와 참조 카운터를 위한 데이터 구조를 위한 메모리를 할당
+
+
+
+ex)
+
+#include <bits/stdc++.h>
+
+void f(std::shared_ptr<int> s) //Call by Reference
+{
+    std::cout << s.use_count() << std::endl;  // 1
+}
+
+void ff(std::shared_ptr<int>& s) //참조 호출 (숫자 증가 x)
+{
+    std::cout << s.use_count() << std::endl;  // 1
+}
+
+int main()
+{
+
+    std::shared_ptr<int> s1(new int(10));
+    std::shared_ptr<int> s2 = std::make_shared<int>(10);
+    
+    std::cout << *s1 << std::endl; //10
+    std::cout << *s2 << std::endl; //10
+    
+    std::shared_ptr<int> s;
+    
+    std::cout << s.use_count() << std::endl; // 0
+    
+    s = std::make_shared<int>(10);
+    
+    std::cout << s.use_count() << std::endl; // 1
+    
+    std::shared_ptr<int> s2;
+    
+    s2 = s;
+    std::cout << s.use_count() << " " << s2.use_count() << std::endl; // 2 2
+    
+    s = nullptr;
+    std::cout << s.use_count() << " " << s2.use_count() << std::endl; // 0 1
+    
+    s2.reset();
+    std::cout << s.use_count() << " " << s2.use_count() << std::endl; // 0 0
+    
+    std::shared_ptr<int> s1 = std::make_shared<int>(10);
+    std::cout << s1.use_count() << std::endl;   // 1
+    {
+        std::shared_ptr<int> s2 = s1;
+        std::cout << s1.use_count() << " " << s2.use_count() << std::endl;  // 2 2
+    }
+    std::cout << s1.use_count() << std::endl;  // 1
+    //
+    
+    std::shared_ptr<int> s1 = std::make_shared<int>(10);
+    std::cout << s1.use_count() << std::endl; // 2
+    f(s1);
+    
+    std::cout << s1.use_count() << std::endl; // 1
+    
+    //
+    
+    std::shared_ptr<int> s1 = std::make_shared<int>(10);
+    std::cout << s1.use_count() << std::endl; // 1
+    ff(s1);
+    
+    std::cout << s1.use_count() << std::endl; // 1
+    
+    //NULL인지 검사
+    std::shared_ptr<int> p3(new int[12]);
+    
+    if (!s1)
+        std::cout << "Yes, s1 is empty" << std::endl;
+    
+    if (s1 == NULL)
+        std::cout << "s1 is empty" << std::endl;
+    
+    if (s1 == nullptr)
+        std::cout << "s1 is empty" << std::endl;
+    
+    return 0;
+}
+
+
+
+# common.h 생성
+
+#pragma once
+
+#ifndef _COMMON_H
+#define _COMMON_H 1
+
+#include <boost/asio.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include <boost/regex.hpp>
+
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+
+#include <bits/stdc++.h>
+
+namespace ba = boost::asio;
+namespace bs = boost::system;
+
+typedef boost::shared_ptr<ba::ip::tcp::socket> socket_ptr;
+typedef boost::shared_ptr<ba::io_service> io_service_ptr;
+
+#endif /* _COMMON_H */
+
+
+
+# 06-16 할 내용
+
+1. proxy 커넥팅부분 마저 공부 및 적용
+2. 강의받으면 강의듣고 적용할 부분 있나 체크 
+
